@@ -3,7 +3,8 @@ import axios from "axios";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const API_URL = "http://localhost:5000/api"; // Backend API URL
+const API_URL = " https://to-do-mern-4.onrender.com/api";
+// Backend API URL
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
