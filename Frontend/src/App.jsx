@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import TaskInput from "./components/TaskInput";
-import TaskList from "./components/TaskList";
+import TaskInput from "./TaskInput";
+import TaskList from "./TaskList";
 const API_URL = "https://to-do-mern-9.onrender.com/api";
 
 export default function App() {
