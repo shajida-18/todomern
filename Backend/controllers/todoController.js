@@ -1,20 +1,23 @@
 const Todo = require("../models/Todo");
 
-// find method to get all todos
-const getAllTodo = async (req, res) => {
+exports.getAllTodo = async (req, res) => {
   try {
     const todos = await Todo.find();
     res.json(todos);
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({
+      message: "Server Error",
+    });
   }
 };
 
-//creating todo
-const createTodo = async (req, res) => {
+exports.createTodo = async (req, res) => {
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ message: "Todo is required" });
+    if (!text)
+      return res.status(400).json({
+        message: "Todo is required",
+      });
 
     const todo = new Todo({ text });
     await todo.save();
@@ -24,8 +27,7 @@ const createTodo = async (req, res) => {
   }
 };
 
-// updating todo by id
-const updateTodo = async (req, res) => {
+exports.updateTodo = async (req, res) => {
   try {
     const { id } = req.params;
     const { text, completed } = req.body;
@@ -43,8 +45,7 @@ const updateTodo = async (req, res) => {
   }
 };
 
-// Delete todo by id
-const deleteTodo = async (req, res) => {
+exports.deleteTodo = async (req, res) => {
   try {
     const { id } = req.params;
     const todo = await Todo.findByIdAndDelete(id);
@@ -55,5 +56,3 @@ const deleteTodo = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
-
-module.exports = { getAllTodo, createTodo, updateTodo, deleteTodo };

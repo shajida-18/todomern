@@ -1,147 +1,168 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
 
-const API_URL = " https://to-do-mern-4.onrender.com/api";
-// Backend API URL
+const API_URL = "https://to-do-mern-4.onrender.com/api";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
-  const [input, setInput] = useState("");
+  const [newTask, setNewTask] = useState("");
   const [editTaskId, setEditTaskId] = useState(null);
-  const [editInput, setEditInput] = useState("");
+  const [editText, setEditText] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Fetching  all todos
-  const fetchTodos = async () => {
+  const getTasks = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/todos`);
-      setTasks(response.data);
-    } catch (error) {
-      alert("Failed to fetch todos");
-      console.error(error);
+      const response = await fetch(`${API_URL}/todos`);
+      const data = await response.json();
+      setTasks(data);
+    } catch (err) {
+      console.error(err);
     }
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchTodos();
+    getTasks();
   }, []);
 
-  // Adding new task or tofo
   const addTask = async () => {
-    if (!input.trim()) return;
-    try {
-      await axios.post(`${API_URL}/todo/new`, { text: input.trim() });
-      setInput("");
-      fetchTodos();
-    } catch (error) {
-      alert("Failed to add todo");
-      console.error(error);
-    }
+    if (!newTask.trim()) return;
+    await fetch(`${API_URL}/todo/new`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: newTask.trim() }),
+    });
+    setNewTask("");
+    getTasks();
   };
 
   const deleteTask = async (id) => {
-    try {
-      await axios.delete(`${API_URL}/todo/${id}`);
-      fetchTodos();
-    } catch (error) {
-      alert("Failed to delete todo");
-      console.error(error);
-    }
-  };
-  //updating
-  const toggleComplete = async (task) => {
-    try {
-      await axios.put(`${API_URL}/todo/${task._id}`, {
-        completed: !task.completed,
-      });
-      fetchTodos();
-    } catch (error) {
-      alert("Failed to update todo");
-      console.error(error);
-    }
+    await fetch(`${API_URL}/todo/${id}`, { method: "DELETE" });
+    getTasks();
   };
 
-  // editing
-  const startEdit = (id, currentText) => {
+  const toggleTask = async (task) => {
+    await fetch(`${API_URL}/todo/${task._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed: !task.completed }),
+    });
+    getTasks();
+  };
+
+  const startEdit = (id, text) => {
     setEditTaskId(id);
-    setEditInput(currentText);
+    setEditText(text);
   };
 
-  // Save edit
   const saveEdit = async (id) => {
-    if (!editInput.trim()) return;
-    try {
-      await axios.put(`${API_URL}/todo/${id}`, { text: editInput.trim() });
-      setEditTaskId(null);
-      setEditInput("");
-      fetchTodos();
-    } catch (error) {
-      alert("Failed to update todo");
-      console.error(error);
-    }
+    if (!editText.trim()) return;
+    await fetch(`${API_URL}/todo/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: editText.trim() }),
+    });
+    setEditTaskId(null);
+    setEditText("");
+    getTasks();
   };
 
-  // Cancel editing
   const cancelEdit = () => {
     setEditTaskId(null);
-    setEditInput("");
+    setEditText("");
   };
 
   return (
     <div
-      className="d-flex justify-content-center align-items-center "
-      style={{ background: "#fff", height: "100vh", width: "100vw" }}
+      style={{
+        backgroundColor: "skyblue",
+        height: "100vh",
+        width: "100vw",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "10px",
+      }}
     >
       <div
-        className="card  p-4"
-        style={{ minWidth: "400px", maxWidth: "500px", width: "100%" }}
+        style={{
+          backgroundColor: "white",
+          minWidth: "300px",
+          maxWidth: "500px",
+          width: "100%",
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "5px",
+        }}
       >
-        <h2 className="text-center mb-4">ToDo List</h2>
-        <div className="input-group mb-3">
+        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>ToDo List</h2>
+
+        <div style={{ display: "flex", marginBottom: "15px" }}>
           <input
             type="text"
-            className="form-control"
             placeholder="Add new task"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addTask()}
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
             disabled={loading}
+            style={{
+              flex: 1,
+              padding: "6px",
+              border: "1px solid whitesmoke",
+              borderRadius: "3px",
+              marginRight: "5px",
+            }}
           />
           <button
-            className="btn btn-primary"
             onClick={addTask}
             disabled={loading}
+            style={{
+              padding: "6px 12px",
+              border: "none",
+              backgroundColor: "blue",
+              color: "white",
+              borderRadius: "3px",
+              cursor: "pointer",
+            }}
           >
             Add
           </button>
         </div>
+
         {loading ? (
-          <div className="text-center">Loading tasks...</div>
+          <div style={{ textAlign: "center" }}>Loading tasks...</div>
         ) : (
-          <ul className="list-group">
+          <ul style={{ listStyle: "none", padding: 0 }}>
             {tasks.map((task) => (
               <li
                 key={task._id}
-                className="list-group-item d-flex align-items-center justify-content-between"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "8px 0",
+                  borderBottom: "1px solid whitesmoke",
+                }}
               >
-                <div className="d-flex align-items-center flex-grow-1">
+                <div style={{ display: "flex", alignItems: "center", flex: 1 }}>
                   <input
-                    className="form-check-input me-2"
                     type="checkbox"
                     checked={task.completed}
-                    onChange={() => toggleComplete(task)}
+                    onChange={() => toggleTask(task)}
+                    style={{ marginRight: "8px" }}
                   />
                   {editTaskId === task._id ? (
                     <input
                       type="text"
-                      className="form-control w-75"
-                      value={editInput}
-                      onChange={(e) => setEditInput(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && saveEdit(task._id)}
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      style={{
+                        flex: 1,
+                        padding: "4px",
+                        border: "1px solid whitesmoke",
+                        borderRadius: "3px",
+                      }}
                     />
                   ) : (
                     <span
@@ -149,25 +170,35 @@ export default function App() {
                         textDecoration: task.completed
                           ? "line-through"
                           : "none",
-                        fontSize: "1.1rem",
+                        flex: 1,
                       }}
                     >
                       {task.text}
                     </span>
                   )}
                 </div>
-                <div>
+
+                <div style={{ marginLeft: "10px" }}>
                   {editTaskId === task._id ? (
                     <>
                       <button
-                        className="btn btn-sm btn-success me-2"
                         onClick={() => saveEdit(task._id)}
+                        style={{
+                          marginRight: "5px",
+                          padding: "3px 6px",
+                          cursor: "pointer",
+                          backgroundColor: "green",
+                        }}
                       >
                         Save
                       </button>
                       <button
-                        className="btn btn-sm btn-secondary"
                         onClick={cancelEdit}
+                        style={{
+                          padding: "3px 6px",
+                          cursor: "pointer",
+                          backgroundColor: "red",
+                        }}
                       >
                         Cancel
                       </button>
@@ -175,14 +206,25 @@ export default function App() {
                   ) : (
                     <>
                       <button
-                        className="btn btn-sm btn-outline-secondary me-2"
                         onClick={() => startEdit(task._id, task.text)}
+                        style={{
+                          marginRight: "5px",
+                          padding: "3px 6px",
+                          cursor: "pointer",
+                        }}
                       >
                         Edit
                       </button>
                       <button
-                        className="btn btn-sm btn-outline-danger"
                         onClick={() => deleteTask(task._id)}
+                        style={{
+                          padding: "3px 6px",
+                          cursor: "pointer",
+                          color: "white",
+                          backgroundColor: "red",
+                          border: "none",
+                          borderRadius: "3px",
+                        }}
                       >
                         Delete
                       </button>
