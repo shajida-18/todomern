@@ -89,11 +89,10 @@ export default function App() {
     >
       <div
         style={{
-          backgroundColor: "white",
-          width: "100%",
+          backgroundColor: "pink",
           padding: "20px",
           border: "1px solid #ccc",
-          borderRadius: "5px",
+         
         }}
       >
         <h2 style={{ textAlign: "center", marginBottom: "20px" }}>ToDo List</h2>
