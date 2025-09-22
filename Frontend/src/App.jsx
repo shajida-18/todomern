@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-
-const API_URL = "https://to-do-mern-4.onrender.com/api";
+import TaskInput from "./components/TaskInput";
+import TaskList from "./components/TaskList";
+const API_URL = "https://to-do-mern-9.onrender.com/api";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -89,8 +90,6 @@ export default function App() {
       <div
         style={{
           backgroundColor: "white",
-          minWidth: "300px",
-          maxWidth: "500px",
           width: "100%",
           padding: "20px",
           border: "1px solid #ccc",
@@ -99,142 +98,25 @@ export default function App() {
       >
         <h2 style={{ textAlign: "center", marginBottom: "20px" }}>ToDo List</h2>
 
-        <div style={{ display: "flex", marginBottom: "15px" }}>
-          <input
-            type="text"
-            placeholder="Add new task"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            disabled={loading}
-            style={{
-              flex: 1,
-              padding: "6px",
-              border: "1px solid whitesmoke",
-              borderRadius: "3px",
-              marginRight: "5px",
-            }}
-          />
-          <button
-            onClick={addTask}
-            disabled={loading}
-            style={{
-              padding: "6px 12px",
-              border: "none",
-              backgroundColor: "blue",
-              color: "white",
-              borderRadius: "3px",
-              cursor: "pointer",
-            }}
-          >
-            Add
-          </button>
-        </div>
+        <TaskInput
+          newTask={newTask}
+          setNewTask={setNewTask}
+          addTask={addTask}
+          loading={loading}
+        />
 
-        {loading ? (
-          <div style={{ textAlign: "center" }}>Loading tasks...</div>
-        ) : (
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {tasks.map((task) => (
-              <li
-                key={task._id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "8px 0",
-                  borderBottom: "1px solid whitesmoke",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", flex: 1 }}>
-                  <input
-                    type="checkbox"
-                    checked={task.completed}
-                    onChange={() => toggleTask(task)}
-                    style={{ marginRight: "8px" }}
-                  />
-                  {editTaskId === task._id ? (
-                    <input
-                      type="text"
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      style={{
-                        flex: 1,
-                        padding: "4px",
-                        border: "1px solid whitesmoke",
-                        borderRadius: "3px",
-                      }}
-                    />
-                  ) : (
-                    <span
-                      style={{
-                        textDecoration: task.completed
-                          ? "line-through"
-                          : "none",
-                        flex: 1,
-                      }}
-                    >
-                      {task.text}
-                    </span>
-                  )}
-                </div>
-
-                <div style={{ marginLeft: "10px" }}>
-                  {editTaskId === task._id ? (
-                    <>
-                      <button
-                        onClick={() => saveEdit(task._id)}
-                        style={{
-                          marginRight: "5px",
-                          padding: "3px 6px",
-                          cursor: "pointer",
-                          backgroundColor: "green",
-                        }}
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={cancelEdit}
-                        style={{
-                          padding: "3px 6px",
-                          cursor: "pointer",
-                          backgroundColor: "red",
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => startEdit(task._id, task.text)}
-                        style={{
-                          marginRight: "5px",
-                          padding: "3px 6px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteTask(task._id)}
-                        style={{
-                          padding: "3px 6px",
-                          cursor: "pointer",
-                          color: "white",
-                          backgroundColor: "red",
-                          border: "none",
-                          borderRadius: "3px",
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+        <TaskList
+          tasks={tasks}
+          loading={loading}
+          toggleTask={toggleTask}
+          deleteTask={deleteTask}
+          startEdit={startEdit}
+          saveEdit={saveEdit}
+          cancelEdit={cancelEdit}
+          editTaskId={editTaskId}
+          editText={editText}
+          setEditText={setEditText}
+        />
       </div>
     </div>
   );
